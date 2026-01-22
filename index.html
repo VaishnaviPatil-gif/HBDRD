@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Reya!</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@300;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Custom Animations & Styles */
+        body {
+            font-family: 'Nunito', sans-serif;
+            overflow-x: hidden;
+            background-color: #fff0f3; /* Soft Pink Base */
+        }
+
+        .font-script {
+            font-family: 'Great Vibes', cursive;
+        }
+
+        /* Floating Animation */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .animate-bounce-slow {
+             animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(-5%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+            50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+        }
+
+        /* Fade Transitions */
+        .fade-in {
+            animation: fadeIn 1.2s ease-out forwards;
+            opacity: 0;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .screen {
+            position: fixed; /* Fixed to prevent scrolling between pages */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto; /* Allow scrolling within a page if needed */
+            transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+            opacity: 1;
+            z-index: 10;
+        }
+
+        .hidden-screen {
+            opacity: 0;
+            pointer-events: none;
+            z-index: -1;
+            display: none; 
+        }
+
+        /* Custom Cake Styles */
+        .cake-container {
+            position: relative;
+            width: 250px;
+            height: 200px;
+            margin: 0 auto;
+        }
+        .cake-base {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100px;
+            background: #ffc2d1;
+            border-radius: 10px 10px 0 0;
+        }
+        .cake-layer {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 80px;
+            background: #ffb3c6;
+            border-radius: 10px 10px 0 0;
+        }
+        .frosting {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background: #fff;
+            border-radius: 10px 10px 50% 50%;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        .candle {
+            position: absolute;
+            top: -40px;
+            width: 10px;
+            height: 40px;
+            background: linear-gradient(#ff99c8, #ff5c8a);
+            border-radius: 4px;
+        }
+        .candle-1 { left: 20%; }
+        .candle-2 { left: 50%; transform: translateX(-50%); }
+        .candle-3 { right: 20%; }
+
+        .flame {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 18px;
+            background: #ffd166;
+            border-radius: 50% 50% 20% 20%;
+            animation: flicker 0.5s infinite alternate;
+            box-shadow: 0 0 10px #ffd166, 0 0 20px #ff6b6b;
+            transition: opacity 0.5s ease;
+        }
+        .flame.out {
+            opacity: 0;
+            animation: none;
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1); opacity: 0.9; }
+            100% { transform: translateX(-50%) scale(1.1); opacity: 1; }
+        }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        /* Image Slider */
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scroll-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .sparkle {
+            position: absolute;
+            pointer-events: none;
+            animation: sparkleAnim 2s infinite;
+        }
+        @keyframes sparkleAnim {
+            0% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0); }
+        }
+
+        /* Button Standard */
+        .nav-btn {
+            background: linear-gradient(to right, #fb7185, #e879f9); /* rose-400 to purple-400 */
+            color: white;
+            padding: 12px 32px;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 1.125rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .nav-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="text-gray-700 h-screen w-screen overflow-hidden">
+
+    <!-- Background Music -->
+    <audio id="bg-music" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_2491b48358.mp3?filename=gentle-piano-124036.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- PAGE 1: Welcome Page -->
+    <div id="page1" class="screen flex flex-col items-center justify-center bg-gradient-to-br from-pink-100 via-rose-100 to-purple-100">
+        <div class="absolute top-10 left-10 text-3xl opacity-60 animate-float">❤️</div>
+        <div class="absolute bottom-20 right-10 text-4xl opacity-60 animate-float">✨</div>
+        
+        <div class="text-center p-8 max-w-md z-10">
+            <h1 class="text-3xl md:text-5xl font-bold text-rose-500 mb-6 tracking-wide fade-in">
+                Hey Reya <span class="inline-block animate-bounce-slow">👀💖</span>
+            </h1>
+            <p class="text-xl text-gray-600 mb-10 fade-in leading-relaxed" style="animation-delay: 0.5s;">
+                Someone has a surprise for you…
+            </p>
+            
+            <div class="flex justify-center gap-4 text-4xl mb-12 fade-in" style="animation-delay: 1s;">
+                <span class="animate-bounce" style="animation-delay: 0.1s">🎁</span>
+                <span class="animate-bounce" style="animation-delay: 0.2s">🎈</span>
+                <span class="animate-bounce" style="animation-delay: 0.3s">✨</span>
+            </div>
+            
+            <button onclick="navigate('page1', 'page2', true)" class="nav-btn fade-in" style="animation-delay: 1.5s;">
+                Tap to Begin 🎉
+            </button>
+        </div>
+    </div>
+
+    <!-- PAGE 2: Birthday Blast -->
+    <div id="page2" class="screen hidden-screen flex flex-col items-center justify-center bg-gradient-to-b from-rose-50 via-white to-rose-100 text-center px-4">
+        <h1 class="font-bold text-6xl md:text-8xl text-rose-500 mb-6 animate-float">
+            HAPPY BIRTHDAY REYA
+        </h1>
+        <div class="text-3xl mb-8">🎂💖</div>
+        
+        <p class="text-xl md:text-2xl text-purple-500 font-bold mb-12">
+            “Today is all about YOU 🥳✨”
+        </p>
+
+        <button onclick="navigate('page2', 'page3')" class="nav-btn">
+            Let’s Make It Fun 😄
+        </button>
+    </div>
+
+    <!-- PAGE 3: Why You're Special -->
+    <div id="page3" class="screen hidden-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50 px-6">
+        <div class="max-w-xl w-full glass-card p-8 md:p-12 rounded-3xl text-center transform hover:scale-[1.02] transition-transform duration-500">
+            <div class="text-5xl mb-6 animate-pulse">💌</div>
+            <p class="text-lg md:text-xl text-gray-700 leading-loose font-medium mb-6">
+                "Reya, you have this beautiful way of making everything feel lighter just by being there. <br><br>
+                Your smile carries warmth, your words bring comfort, and your presence means more than you'll ever know. <br><br>
+                This little website can never match how special you are… but it's my small way of telling you — you truly matter to me 💗"
+            </p>
+            <div class="flex justify-center gap-3 text-2xl mb-8">
+                <span>💕</span><span>🌸</span><span>✨</span>
+            </div>
+            
+            <button onclick="navigate('page3', 'page4')" class="nav-btn">
+                Next Surprise ➡️
+            </button>
+        </div>
+    </div>
+
+    <!-- PAGE 4: Memory Lane -->
+    <div id="page4" class="screen hidden-screen flex flex-col items-center justify-center bg-gradient-to-tr from-rose-100 to-orange-50 px-4">
+        <h2 class="text-3xl font-bold text-rose-500 mb-2">Memory Lane</h2>
+        <p class="text-gray-500 mb-8 italic">"Every picture has a story… and every story has you 💖"</p>
+        
+        <!-- Gallery -->
+        <div class="w-full max-w-4xl flex overflow-x-auto gap-6 py-8 px-4 scroll-hide snap-x snap-mandatory">
+            
+             <!-- Photo 1 -->
+             <div class="snap-center shrink-0 w-64 md:w-80 bg-white p-4 rounded-2xl shadow-xl transform rotate-2 transition hover:rotate-0">
+                <div class="aspect-[3/4] rounded-xl overflow-hidden bg-gray-100 mb-4">
+                    <img src="1.jpeg" class="w-full h-full object-cover">
+                </div>
+                <p class="text-center font-handwriting text-rose-400 font-bold">"Too many memories 😄"</p>
+            </div>
+
+            <!-- Photo 2 -->
+            <div class="snap-center shrink-0 w-64 md:w-80 bg-white p-4 rounded-2xl shadow-xl transform -rotate-2 transition hover:rotate-0">
+                <div class="aspect-[3/4] rounded-xl overflow-hidden bg-gray-100 mb-4">
+                    <img src="2.png" class="w-full h-full object-cover">
+                </div>
+                <p class="text-center font-handwriting text-rose-400 font-bold">"Best moments 💫"</p>
+            </div>
+
+            <!-- Photo 3 -->
+            <div class="snap-center shrink-0 w-64 md:w-80 bg-white p-4 rounded-2xl shadow-xl transform rotate-1 transition hover:rotate-0">
+                <div class="aspect-[3/4] rounded-xl overflow-hidden bg-gray-100 mb-4">
+                    <img src="3.png" class="w-full h-full object-cover">
+                </div>
+                <p class="text-center font-handwriting text-rose-400 font-bold">"More to come 💕"</p>
+            </div>
+        </div>
+
+        <button onclick="navigate('page4', 'page5')" class="nav-btn mt-8">
+            One More Surprise 😋
+        </button>
+    </div>
+
+    <!-- PAGE 5: Cake Fun -->
+    <div id="page5" class="screen hidden-screen flex flex-col items-center justify-center bg-rose-50 px-4">
+        <h2 class="text-3xl font-bold text-purple-400 mb-16">Make a Wish!</h2>
+        
+        <div class="cake-container mb-12 scale-125 transform">
+            <div class="cake-base">
+                 <div class="frosting"></div>
+            </div>
+            <div class="cake-layer">
+                <div class="frosting"></div>
+                <div class="candle candle-1"><div class="flame"></div></div>
+                <div class="candle candle-2"><div class="flame"></div></div>
+                <div class="candle candle-3"><div class="flame"></div></div>
+            </div>
+        </div>
+
+        <div id="wish-text" class="h-12 mb-8 font-bold text-rose-500 text-2xl transition-opacity duration-500 opacity-0 text-center">
+            Make a wish, Reya ✨💫
+        </div>
+
+        <button id="blow-btn" onclick="blowCandles()" class="nav-btn">
+            Blow the Candles 🎉
+        </button>
+    </div>
+
+    <!-- PAGE 6: Final Message -->
+    <div id="page6" class="screen hidden-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-500 via-pink-400 to-rose-300 overflow-hidden relative text-center px-6 py-8">
+        <div class="absolute inset-0 bg-gradient-to-t from-rose-600/40 via-transparent to-transparent opacity-60"></div>
+        
+        <div class="z-10 max-w-2xl space-y-6 overflow-y-auto max-h-[85vh]">
+            <p class="text-base md:text-lg text-white leading-relaxed font-light opacity-0 fade-in-final" style="animation-delay: 0.5s;">
+                "Your wish will surely be fulfilled ✨ Because someone with a heart as pure and beautiful as yours truly deserves all the happiness in the world. May life always be kind to you, may your dreams slowly turn into reality, and may every step you take lead you toward peace, success, and endless smiles.
+            </p>
+
+            <p class="text-base md:text-lg text-white leading-relaxed font-light opacity-0 fade-in-final" style="animation-delay: 1.5s;">
+                Reya, you have this rare magic of making people feel comfortable, happy, and understood just by being yourself. Your smile has the power to brighten the dullest days, and your presence brings warmth that words can't fully explain.
+            </p>
+
+            <p class="text-base md:text-lg text-white leading-relaxed font-light opacity-0 fade-in-final" style="animation-delay: 2.5s;">
+                No matter where life takes you, I hope you never forget how special you are and how deeply you are appreciated. May your days be filled with laughter, your heart with love, and your journey with beautiful moments that make you proud of yourself.
+            </p>
+
+            <p class="text-base md:text-lg text-white leading-relaxed font-light opacity-0 fade-in-final" style="animation-delay: 3.5s;">
+                Stay the kind, strong, and wonderful person you are. The world truly needs more people like you.
+            </p>
+
+            <h1 class="font-bold text-3xl md:text-4xl text-white mt-6 opacity-0 fade-in-final" style="animation-delay: 4.5s;">
+                Happy Birthday, BBG ! 🎉💗
+            </h1>
+
+            <p class="text-base md:text-lg text-white opacity-0 fade-in-final" style="animation-delay: 5.5s;">
+                May this year bring you everything your heart silently wishes for."
+            </p>
+        </div>
+
+        <!-- Hidden button triggers automatically via timer, but nice to have just in case -->
+        <button onclick="navigate('page6', 'page7')" id="auto-next-btn" class="absolute bottom-10 opacity-0 pointer-events-none">Next</button>
+    </div>
+
+    <!-- PAGE 7: End Screen -->
+    <div id="page7" class="screen hidden-screen flex flex-col items-center justify-center bg-gradient-to-br from-pink-200 to-purple-200 text-center px-6">
+        <div class="glass-card p-10 rounded-full w-80 h-80 flex flex-col items-center justify-center mb-8 animate-float">
+            <h2 class="text-2xl font-bold text-rose-500 mb-4">This website ends…</h2>
+            <p class="text-gray-600 text-lg mb-4">But our memories don't 😄💞</p>
+            <p class="text-gray-700 text-sm font-semibold italic">Wait for more 💕</p>
+        </div>
+
+        <button onclick="location.reload()" class="nav-btn bg-white text-rose-500 hover:bg-rose-50">
+            Replay 🎀
+        </button>
+    </div>
+
+    <script>
+        const audio = document.getElementById('bg-music');
+
+        function navigate(fromId, toId, initAudio = false) {
+            if (initAudio) {
+                audio.volume = 0.5;
+                audio.play().catch(e => console.log("Audio play failed:", e));
+            }
+
+            const fromScreen = document.getElementById(fromId);
+            const toScreen = document.getElementById(toId);
+
+            // Fade out current
+            fromScreen.style.opacity = '0';
+            
+            setTimeout(() => {
+                fromScreen.style.display = 'none';
+                fromScreen.classList.add('hidden-screen');
+                
+                toScreen.style.display = 'flex'; // or block depending on layout, flex centers content
+                toScreen.classList.remove('hidden-screen');
+                
+                // Special actions for specific pages
+                if (toId === 'page2') triggerConfetti();
+                if (toId === 'page6') startFinalSequence();
+                if (toId === 'page7') createSparkleLoop();
+
+                // Small delay to allow display:flex to apply before opacity transition
+                setTimeout(() => {
+                    toScreen.style.opacity = '1';
+                }, 50);
+            }, 800);
+        }
+
+        function triggerConfetti() {
+            const duration = 3000;
+            const end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#ff9a9e', '#fad0c4', '#a18cd1']
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#ff9a9e', '#fad0c4', '#a18cd1']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+
+        function blowCandles() {
+            const flames = document.querySelectorAll('.flame');
+            flames.forEach(flame => flame.classList.add('out'));
+
+            const btn = document.getElementById('blow-btn');
+            const wishText = document.getElementById('wish-text');
+            
+            btn.style.transform = "scale(0)";
+            setTimeout(() => {
+                btn.style.display = "none";
+                wishText.style.opacity = "1";
+            }, 300);
+
+            confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.6 },
+                gravity: 0.8,
+                scalar: 0.8,
+                colors: ['#ffffff', '#ffe4e6']
+            });
+
+            // Auto navigate to Page 6 after 4 seconds
+            setTimeout(() => {
+                navigate('page5', 'page6');
+            }, 4000);
+        }
+
+        function startFinalSequence() {
+            // Trigger animations manually for reliability
+            const elements = document.querySelectorAll('#page6 .fade-in-final');
+            elements.forEach(el => {
+                el.style.transition = "opacity 2s ease-in-out, transform 2s ease-out";
+                el.style.opacity = "1";
+            });
+
+            // Float hearts
+            setInterval(() => {
+                createFloatingHeart();
+            }, 800);
+
+            // Navigate to End Screen after reading time (e.g., 12 seconds)
+            setTimeout(() => {
+                navigate('page6', 'page7');
+            }, 10000);
+        }
+
+        function createFloatingHeart() {
+            const heart = document.createElement('div');
+            heart.innerHTML = '💖';
+            heart.style.position = 'absolute';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.bottom = '-20px';
+            heart.style.fontSize = Math.random() * 20 + 20 + 'px';
+            heart.style.opacity = '0.6';
+            heart.style.transition = 'bottom 4s ease-in, opacity 4s ease-in';
+            heart.style.zIndex = '0';
+            
+            document.getElementById('page6').appendChild(heart);
+            
+            setTimeout(() => {
+                heart.style.bottom = '100vh';
+                heart.style.opacity = '0';
+            }, 50);
+
+            setTimeout(() => heart.remove(), 4000);
+        }
+
+        function createSparkleLoop() {
+             // Reuse sparkle logic if needed or just leave static
+        }
+    </script>
+</body>
+</html>
